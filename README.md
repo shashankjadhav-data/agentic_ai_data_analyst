@@ -228,4 +228,4 @@ Add a license (for example MIT) before publishing.
 
 ## Contact
 
-Shashank Valmik Jadhav: shashankvalmik.jadhav@stud.srh-university.de
+Shashank Valmik Jadhav: jadhavshashank1992@gmail.com
