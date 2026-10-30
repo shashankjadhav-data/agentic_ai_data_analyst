@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Agentic AI Data Analysis Report</title>
+  <style>
+    body { font-family: system-ui, "Segoe UI", sans-serif; margin: 2rem; line-height: 1.5; }
+    h1, h2 { color: #003366; }
+    h1 { border-bottom: 2px solid #003366; padding-bottom: 0.5rem; }
+    .small { font-size: 0.85rem; color: #666; }
+    .section { margin: 2rem 0; }
+    .grid { display: flex; flex-wrap: wrap; gap: 1rem; }
+    .card { border: 1px solid #ccc; padding: 0.5rem; max-width: 360px; }
+    .card img { max-width: 100%; height: auto; display: block; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+    th, td { border: 1px solid #ccc; padding: 4px 6px; text-align: left; }
+    th { background: #f0f0f0; }
+    code { background: #f5f5f5; padding: 1px 3px; }
+    pre { background: #f7f7f7; padding: 0.75rem; overflow-x: auto; }
+    .error { background: #ffecec; border: 1px solid #ffb3b3; padding: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Agentic AI Data Analysis Report</h1>
+  <p class="small">
+    Generated at {{ generated_at }} |
+    Critique status: {{ critique.get("status", "n/a") }} |
+    Metrics recorded: {{ metrics|length }}
+  </p>
+
+  <div class="section">
+    {{ markdown_body | safe }}
+  </div>
+
+  {% if figures.histograms %}
+  <div class="section">
+    <h2>Exploratory Histograms</h2>
+    <div class="grid">
+      {% for f in figures.histograms %}
+      <div class="card">
+        <img src="figures/{{ f }}" alt="{{ f }}">
+        <div class="small">{{ f }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if figures.boxplots %}
+  <div class="section">
+    <h2>Box Plots</h2>
+    <div class="grid">
+      {% for f in figures.boxplots %}
+      <div class="card">
+        <img src="figures/{{ f }}" alt="{{ f }}">
+        <div class="small">{{ f }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if figures.barplots %}
+  <div class="section">
+    <h2>Bar Plots</h2>
+    <div class="grid">
+      {% for f in figures.barplots %}
+      <div class="card">
+        <img src="figures/{{ f }}" alt="{{ f }}">
+        <div class="small">{{ f }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if figures.corr_heatmaps or figures.other_eda %}
+  <div class="section">
+    <h2>Correlation Matrix / Heatmaps</h2>
+    <div class="grid">
+      {% for f in figures.corr_heatmaps %}
+      <div class="card">
+        <img src="figures/{{ f }}" alt="{{ f }}">
+        <div class="small">{{ f }}</div>
+      </div>
+      {% endfor %}
+
+      {% for f in figures.other_eda %}
+      <div class="card">
+        <img src="figures/{{ f }}" alt="{{ f }}">
+        <div class="small">{{ f }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if figures.confusion_matrices %}
+  <div class="section">
+    <h2>Confusion Matrices</h2>
+    <div class="grid">
+      {% for f in figures.confusion_matrices %}
+      <div class="card">
+        <img src="figures/{{ f }}" alt="{{ f }}">
+        <div class="small">{{ f }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if figures.other_ml %}
+  <div class="section">
+    <h2>Additional ML Plots</h2>
+    <div class="grid">
+      {% for f in figures.other_ml %}
+      <div class="card">
+        <img src="figures/{{ f }}" alt="{{ f }}">
+        <div class="small">{{ f }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if figures.uncategorised %}
+  <div class="section">
+    <h2>Other Figures</h2>
+    <div class="grid">
+      {% for f in figures.uncategorised %}
+      <div class="card">
+        <img src="figures/{{ f }}" alt="{{ f }}">
+        <div class="small">{{ f }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="section">
+    <h2>ML Metrics</h2>
+    {% if metrics %}
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Step</th>
+          <th>Model</th>
+          <th>Type</th>
+          <th>Accuracy</th>
+          <th>Precision</th>
+          <th>Recall</th>
+          <th>F1</th>
+          <th>R2</th>
+          <th>RMSE</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in metrics %}
+        {% set mm = m.get("metrics", {}) %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ m.get("step_id","") }}</td>
+          <td>{{ m.get("model","") }}</td>
+          <td>{{ m.get("problem_type","") }}</td>
+          <td>{{ mm.get("accuracy","") }}</td>
+          <td>{{ mm.get("precision","") }}</td>
+          <td>{{ mm.get("recall","") }}</td>
+          <td>{{ mm.get("f1","") }}</td>
+          <td>{{ mm.get("r2","") }}</td>
+          <td>{{ mm.get("rmse","") }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p>No ML metrics were recorded (possibly no clear target was found, or modeling was skipped).</p>
+    {% endif %}
+  </div>
+
+  {% if errors %}
+  <div class="section">
+    <h2>Execution Errors</h2>
+    {% for e in errors %}
+      <div class="error"><pre>{{ e | tojson(indent=2) }}</pre></div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</body>
+</html>

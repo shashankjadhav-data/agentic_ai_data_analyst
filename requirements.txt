@@ -1,0 +1,9 @@
+ollama
+pandas
+numpy
+scipy
+scikit-learn
+matplotlib
+seaborn
+jinja2
+markdown
